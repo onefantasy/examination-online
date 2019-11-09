@@ -49,14 +49,14 @@ export function postJSON(url,data){
   });
 */
   // 响应拦截器
-  /* instance.interceptors.response.use(response => {
+   instance.interceptors.response.use(response => {
     // 请求成功的拦截
-    console.log('请求响应的数据类型：',typeof response.data);
+    // console.log('请求响应的数据类型：',typeof response.data);
     return response
-  },err => {
+   },err => {
     // 请求失败的拦截
-    console.log('请求响应失败!')
-  }); */
+    console.warn('请求失败!')
+   });
 
   return instance.post(url,data);
 }

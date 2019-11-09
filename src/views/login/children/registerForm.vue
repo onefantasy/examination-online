@@ -1,17 +1,24 @@
 <template>
-  <div class="register-big-box">
+  <div class="register-big-box ignore">
     <div class="box-title">
       注册
     </div>
     <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="15%">
       <el-form-item label="账号" prop="account" class="form-item">
-        <el-input v-model="ruleForm.account" autocomplete="off"></el-input>
+        <el-input v-model="ruleForm.account" autocomplete="off" placeholder="8至10位数字和字母"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password" class="form-item">
-        <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
+        <el-input type="password" v-model="ruleForm.password" autocomplete="off" placeholder="8至12位数字和字母"></el-input>
       </el-form-item>
-      <el-form-item label="确认密码" prop="checkPassword" class="form-item">
-        <el-input type="password" v-model="ruleForm.checkPassword" autocomplete="off"></el-input>
+      <el-form-item label="我是" prop="status" class="form-item">
+        <el-select v-model="ruleForm.status" placeholder="请选择" class="status-select">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.value"
+            :value="item.key">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item class="button-box">
         <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
@@ -30,33 +37,37 @@
         if (!value) {
           return callback(new Error('账号不能为空'))
         } else if (value.length < 8 || value.length > 10){
-          return callback(new Error('账号必须是8至10位数字或者字母'))
+          return callback(new Error('账号必须是8至10位数字和字母组成'))
+        } else if (!this.reg.test(value)){
+          return callback(new Error('账号必须包含数字和字母'))
         }
         return callback()
       }
       const validatePass = (rule, value, callback) => {
         if (!value) {
           return callback(new Error('密码不能为空'))
-        } else if(value.length < 10 || value.length > 12) {
-          return callback(new Error('密码必须是10至12位的数字或者字母'))
+        } else if (value.length < 8 || value.length > 12) {
+          return callback(new Error('密码必须是8至12位的数字和字母组成'))
+        } else if (!this.reg.test(value)){
+          return callback(new Error('密码必须同时包含数字和字母'))
         }
         return callback()
       }
-      const validateCheck = (rule, value, callback) => {
+      const validateStatus = (rule, value, callback) => {
         if (value === '') {
-          return callback(new Error('确认密码不能为空'))
+          return callback(new Error('必须选择身份'))
         } else {
-          if( value !== this.ruleForm.password){
-            return callback(new Error('两次输入的密码不一致'))
-          }
           return callback();
         }
       }
       return {
+        // 验证输入的账号和密码是否同时包含数字和字母
+        reg: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]+$/,
+        options:[{value: '教师',key: 'T'},{value: '学生',key: 'S'}],
         ruleForm: {
           account: '',
           password: '',
-          checkPassword: ''
+          status: ''
         },
         rules: {
           account: [
@@ -65,8 +76,8 @@
           password: [
             { validator: validatePass, trigger: 'blur' }
           ],
-          checkPassword: [
-            { validator: validateCheck, trigger: 'blur'}
+          status: [
+            { validator: validateStatus, trigger: 'blur'}
           ]
         }
       }
@@ -75,21 +86,34 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            // 注册提示
+            const loading = this.$loading({
+              lock: true,
+              text: '注册中...',
+              spinner: 'el-icon-loading',
+              background: 'rgba(0, 0, 0, 0.7)'
+            })
+            // 验证成功
             register(this.ruleForm).then(res => {
+              loading.close()
               if(res.data.isRegister === 0){
+                // 注册失败
                 this.$toast.showToast(res.data.description)
               } else {
-                this.$toast.showToast('注册成功，赶快去登陆吧!')
+                // 注册成功
+                this.$toast.showToast('注册成功，赶快去登陆吧!',1500)
                 this.resetForm('ruleForm')
                 this.$emit('complete')
               }
             })
           } else {
-            this.$toast.showToast('请检查输入的账号与密码是否符合要求!')
+            // 验证失败
+            this.$toast.showToast('请检查信息是否填写完整!')
             return false
           }
         });
       },
+      // 重置填写的内容
       resetForm(formName) {
         this.$refs[formName].resetFields()
       }
@@ -105,7 +129,7 @@
     text-align: left;
     color: var(--color-white) !important;
     font-size: 15px;
-    width: 80px !important;
+    width: 100% !important;
   }
   .register-big-box .button-box{
     padding-top: 30px;
@@ -121,5 +145,8 @@
     font-weight: 700;
     font-size: 30px;
     line-height: 70px;
+  }
+  .status-select{
+    width: 285px !important;
   }
 </style>

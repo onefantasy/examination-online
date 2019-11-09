@@ -5,12 +5,15 @@
     </div>
     <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="15%">
       <el-form-item label="账号" prop="account" class="form-item">
-        <el-input v-model="ruleForm.account" autocomplete="off"></el-input>
+        <el-input v-model="ruleForm.account" autocomplete="off" placeholder="请输入账号"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password" class="form-item">
-        <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
+        <el-input type="password" v-model="ruleForm.password" autocomplete="off" placeholder="请输入密码"></el-input>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="keep-password">
+        <el-checkbox v-model="isKeep">记住密码</el-checkbox>
+      </el-form-item>
+      <el-form-item class="buttons">
         <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
         <el-button @click="resetForm('ruleForm')">重置</el-button>
       </el-form-item>
@@ -20,6 +23,8 @@
 
 <script>
   import { provingId } from "network/login"
+  import db from 'common/db'
+  import { mapActions } from 'vuex'
 
   export default {
     data() {
@@ -37,9 +42,11 @@
         }
       }
       return {
+        // 记住密码
+        isKeep: false,
         ruleForm: {
           account: '',
-          password: ''
+          password: '',
         },
         rules: {
           account: [
@@ -52,20 +59,55 @@
       }
     },
     methods: {
+      ...mapActions([
+        'setUser'
+      ]),
+      // 记住密码的操作
+      keepPassword(){
+        // 记住密码
+        if(this.isKeep){
+          db.setLocalStorage('account',this.ruleForm.account)
+          db.setLocalStorage('password',this.ruleForm.password)
+          db.setLocalStorage('status',this.ruleForm.status)
+        }else{
+          // 如果不记住密码，则对已经缓存的账号信息进行删除
+          db.delLocalStorage('account')
+          db.delLocalStorage('password')
+          db.delLocalStorage('status')
+        }
+      },
       // 提交
       submitForm(formName) {
+
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            provingId({account: this.ruleForm.account,password:this.ruleForm.password}).then(res => {
-              console.log('验证成功返回结果：',res)
-              this.$toast.showToast('提交验证成功！')
+            // 登录提示
+            const loading = this.$loading({
+              lock: true,
+              text: '登录中...',
+              spinner: 'el-icon-loading',
+              background: 'rgba(0, 0, 0, 0.7)'
+            })
+            // 登录验证
+            provingId(this.ruleForm).then(res => {
+              loading.close()
+              if(res.data.isLogin){
+                this.$toast.showToast('登录成功')
+                // 将账号信息存入仓库
+                this.ruleForm.status = res.data.status
+                this.setUser(this.ruleForm)
+                this.keepPassword()
+                this.resetForm('ruleForm')
+                this.$router.push('/home')
+              }else{
+                this.$toast.showToast(res.data.description || '请求出错')
+              }
             }).catch( err => {
               console.log('验证失败返回结果：',err)
-              this.$toast.showToast('验证失败！')
+              this.$toast.showToast('登录失败')
             })
           } else {
-            this.$toast.showToast('输入不完整或者输入有误！')
-            console.log('error submit!!')
+            this.$toast.showToast('输入有误')
             return false
           }
         })
@@ -87,6 +129,9 @@
     font-size: 15px;
     width: 50px !important;
   }
+  .login-big-box .el-checkbox__label{
+    color: var(--color-white) !important;
+  }
 </style>
 
 <style scoped>
@@ -98,5 +143,11 @@
     font-weight: 700;
     font-size: 30px;
     line-height: 70px;
+  }
+  .keep-password{
+    transform: translateY(-90%) !important;
+  }
+  .buttons{
+    margin: -25px 0 !important;
   }
 </style>
