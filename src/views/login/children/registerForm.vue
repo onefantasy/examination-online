@@ -111,7 +111,7 @@
             this.$toast.showToast('请检查信息是否填写完整!')
             return false
           }
-        });
+        })
       },
       // 重置填写的内容
       resetForm(formName) {

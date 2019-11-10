@@ -110,7 +110,7 @@
             this.$toast.showToast('输入有误')
             return false
           }
-        })
+        });
       },
       // 重置
       resetForm(formName) {
