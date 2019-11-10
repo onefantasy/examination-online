@@ -3,7 +3,7 @@
     <div class="box-title">
       注册
     </div>
-    <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="15%">
+    <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="15%" @keyup.enter.native="submitForm('ruleForm')">
       <el-form-item label="账号" prop="account" class="form-item">
         <el-input v-model="ruleForm.account" autocomplete="off" placeholder="8至10位数字和字母"></el-input>
       </el-form-item>
