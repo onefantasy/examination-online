@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <keep-alive>
-      <router-view class="view"></router-view>
-    </keep-alive>
+    <!-- <keep-alive> -->
+      <router-view></router-view>
+    <!-- </keep-alive> -->
   </div>
 </template>
 
@@ -13,7 +13,7 @@
   export default {
     name: 'app',
     beforeCreate:async function(){
-      if(!db.getLocalStorage('account') || !db.getLocalStorage('password')){
+      /* if(!db.getLocalStorage('account') || !db.getLocalStorage('password')){
         // 如果本地不存在用户的信息缓存，则跳转到登录页面
         this.$router.push('/')
       } else {
@@ -26,7 +26,7 @@
           password: db.getLocalStorage('password'),
           status: db.getLocalStorage('status')
         })
-      }
+      } */
     },
     methods:{
       ...mapActions([

@@ -71,7 +71,7 @@
     cursor: pointer;
     animation: push .8s ease;
     animation-fill-mode: forwards;
-    background-color: rgb(63,54,99);
+    background-color: var(--color-main);
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.6);
     border-radius: 10px 0 0 10px;
   }
@@ -102,7 +102,7 @@
   .box{
     width: 400px;
     height: 500px;
-    background-color: rgb(63,54,99);
+    background-color: var(--color-main);
     box-shadow: 5px 5px 5px 0 rgba(0,0,0,.5);
     position: absolute;
     top: 50%;
