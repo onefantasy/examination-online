@@ -40,6 +40,7 @@
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
+            accept=".jpg"
             >
             <div @click="showImgTip">
               <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
