@@ -13,6 +13,10 @@ Vue.use(toast)
 
 // 引入自定义主题的element
 import 'assets/theme/index.css'
+// 引入element 的方法
+import { Notification } from 'element-ui'
+Vue.prototype.$notify = Notification
+// 引入element的组件
 import {
   Button,
   Image,
@@ -32,6 +36,10 @@ import {
   // element 隐藏的组件，滚动条
   Scrollbar,
   Avatar,
+  Card,
+  RadioGroup,
+  Radio,
+  Upload,
 } from 'element-ui'
 Vue.use(Button)
 Vue.use(Image)
@@ -50,6 +58,10 @@ Vue.use(MenuItem)
 Vue.use(MenuItemGroup)
 Vue.use(Scrollbar)
 Vue.use(Avatar)
+Vue.use(Card)
+Vue.use(RadioGroup)
+Vue.use(Radio)
+Vue.use(Upload)
 
 // 开发环境下，Vue 会提供很多警告来帮你对付常见的错误与陷阱。而在生产环境下，这些警告语句却没有用，反而会增加应用的体积。此外，有些警告检查还有一些小的运行时开销，这在生产环境模式下是可以避免的。(摘于官网说明) 大概意思应该就是，消息提示的环境配置，设置为开发环境或者生产环境
 // Vue.config.productionTip = false;

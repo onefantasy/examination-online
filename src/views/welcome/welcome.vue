@@ -1,6 +1,6 @@
 <template>
 <!-- 我是首页（欢迎页面） -->
-  <div>
+  <div class="p20">
     我是欢迎页面
   </div>
 </template>

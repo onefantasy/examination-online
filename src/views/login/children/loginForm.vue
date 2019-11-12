@@ -5,10 +5,10 @@
     </div>
     <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="15%" @keyup.enter.native="submitForm('ruleForm')">
       <el-form-item label="账号" prop="account" class="form-item">
-        <el-input v-model="ruleForm.account" autocomplete="off" placeholder="请输入账号"></el-input>
+        <el-input v-model="ruleForm.account" autocomplete="off" placeholder="请输入账号" clearable></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password" class="form-item">
-        <el-input type="password" v-model="ruleForm.password" autocomplete="off" placeholder="请输入密码"></el-input>
+        <el-input type="password" v-model="ruleForm.password" autocomplete="off" placeholder="请输入密码" clearable></el-input>
       </el-form-item>
       <el-form-item class="keep-password">
         <el-checkbox v-model="isKeep">记住密码</el-checkbox>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-  import { provingId } from "network/login"
+  import { provingId } from "network/user"
   import db from 'common/db'
   import { mapActions } from 'vuex'
 

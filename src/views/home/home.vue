@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span='3'>
         <!-- 主菜单的内容 -->
-        <mainMenu @selected='menuSelect'/>
+        <mainMenu @selected='menuSelect' :carceerTag='getUser.status' :name='getUser.name' :headIcon='getUser.headIcon' :account='getUser.account'/>
       </el-col>
       <el-col :span='21'>
         <div class='home-content'>
@@ -26,7 +26,8 @@
 <script>
   import mainMenu from 'components/content/mainMenu'
 
-  import { mapGetters } from 'vuex'
+  import { mapGetters,mapActions } from 'vuex'
+  import { getUserInfo } from 'network/user'
 
   export default {
     name: "home",
@@ -49,6 +50,9 @@
       ]),
     },
     methods: {
+      ...mapActions([
+        'setUser'
+      ]),
       // 处理主菜单中的选中事件
       menuSelect(index){
         console.log('home中接收的菜单事件：',typeof index)
@@ -57,7 +61,15 @@
       }
     },
     created(){
-      console.log('用户的账号信息:',JSON.stringify(this.getUser))
+      // 请求用户的详细信息
+      getUserInfo(this.getUser).then(res => {
+        if(!res.data.isGet) this.$toast.showToast(res.data.description || '请求失败')
+        else {
+          this.setUser(res.data.data)
+        }
+      },err => {
+        this.$toast.showToast('请求出错，请稍后重试')
+      })
     },
     components: {
       mainMenu,

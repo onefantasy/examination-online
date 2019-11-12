@@ -1,6 +1,6 @@
 <template>
 <!-- 我的试卷 -->
-  <div>
+  <div class="p20">
     我是我的试卷页面
   </div>
 </template>

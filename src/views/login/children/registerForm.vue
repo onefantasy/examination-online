@@ -5,10 +5,10 @@
     </div>
     <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="15%" @keyup.enter.native="submitForm('ruleForm')">
       <el-form-item label="账号" prop="account" class="form-item">
-        <el-input v-model="ruleForm.account" autocomplete="off" placeholder="8至10位数字和字母"></el-input>
+        <el-input v-model="ruleForm.account" autocomplete="off" placeholder="8至10位数字和字母" clearable></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password" class="form-item">
-        <el-input type="password" v-model="ruleForm.password" autocomplete="off" placeholder="8至12位数字和字母"></el-input>
+        <el-input type="password" v-model="ruleForm.password" autocomplete="off" placeholder="8至12位数字和字母" clearable></el-input>
       </el-form-item>
       <el-form-item label="我是" prop="status" class="form-item">
         <el-select v-model="ruleForm.status" placeholder="请选择" class="status-select">
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-  import { register } from 'network/login'
+  import { register } from 'network/user'
 
   export default {
     data() {

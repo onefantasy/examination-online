@@ -1,7 +1,7 @@
 <template>
-<!-- 我的试卷 -->
-  <div>
-    我是 我的试卷 部分
+<!-- 考试 -->
+  <div class="exam-box p20">
+    <h2>我是考试页面</h2>
   </div>
 </template>
 
@@ -21,6 +21,5 @@
 
 
 <style scoped>
-
-
+  
 </style>

@@ -12,6 +12,7 @@ const exam = () => import('views/exam/exam')
 const grade = () => import('views/grade/grade')
 const user = () => import('views/user/user')
 const topic = () => import('views/topic/topic')
+const error = () => import('views/error/error')
 
 // 解决错误：Uncaught (in promise) NavigationDuplicated {_name: "NavigationDuplicated", name: "NavigationDuplicated"}
 // 原因，点击后跳转到与当前页面相同的路由
@@ -44,6 +45,11 @@ const router = new Router({
         {path:'topic',component: topic},
       ]
     },
+    {
+      // 404 不匹配现有router的处理
+      path: '*',
+      component: error
+    }
   ],
   mode: 'history'
 });

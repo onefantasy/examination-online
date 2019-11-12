@@ -1,10 +1,10 @@
 <template>
   <div class="mainMenu-box">
     <div class="user-info">
-      <el-avatar :size='80' :src="headIcon"></el-avatar>
+      <el-avatar :size='80' :src="headImg"></el-avatar>
       <div class="user-carceer">{{carceer}}</div>
       <div class="user-welcome">~~欢迎您~~</div>
-      <div class="user-name">{{name || '无名'}}</div>
+      <div class="user-name">{{name || account || '无名'}}</div>
     </div>
     <div class="mainMenu">
       <el-scrollbar style="height:100%">
@@ -56,15 +56,21 @@
       headIcon:{
         type: String,
         // 默认头像
-        default: 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png'
+        // default: 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png'
+        default: ''
       },
       carceerTag:{
         // 确定职业的标志，一般是 T 或者 S
         type: String,
-        default: 'T'
+        default: ''
       },
       name:{
         // 用户名称
+        type: String,
+        default: ''
+      },
+      account:{
+        // 用户账号
         type: String,
         default: ''
       }
@@ -96,6 +102,11 @@
           '/home/topic'
         ]
         return arr.indexOf(this.$route.fullPath) + ''
+      },
+      headImg(){
+        // 确定头像的图片
+        if(!this.headIcon) return 'http://img2.imgtn.bdimg.com/it/u=3750211471,3151515749&fm=26&gp=0.jpg'
+        return this.headIcon
       }
     },
     methods:{

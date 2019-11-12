@@ -1,6 +1,6 @@
 <template>
 <!-- 出卷 -->
-  <div>
+  <div class="p20">
     我是出卷页面
   </div>
 </template>

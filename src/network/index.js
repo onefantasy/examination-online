@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { baseURL,timeout } from './config';
+import axios from 'axios'
+import { baseURL,timeout } from './config'
 
 /*
 * config:{
@@ -12,7 +12,7 @@ export function getJSON(config){
   const instance = axios.create({
     baseURL,
     timeout,
-  });
+  })
 
   // 请求拦截器
   /*instance.interceptors.request.use(config => {
@@ -30,14 +30,14 @@ export function getJSON(config){
 
   });*/
 
-  return instance(config);
+  return instance(config)
 }
 
 export function postJSON(url,data){
   const instance = axios.create({
     baseURL,
     timeout,
-  });
+  })
 
   // 请求拦截器
   /*instance.interceptors.request.use(config => {
@@ -56,7 +56,7 @@ export function postJSON(url,data){
    },err => {
     // 请求失败的拦截
     console.warn('请求失败!')
-   });
+   })
 
-  return instance.post(url,data);
+  return instance.post(url,data)
 }
