@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span='3'>
         <!-- 主菜单的内容 -->
-        <mainMenu @selected='menuSelect' :carceerTag='getUser.status' :name='getUser.name' :headIcon='getUser.headIcon' :account='getUser.account'/>
+        <mainMenu @selected='menuSelect' :carceerTag='getUser.status' :name='getUser.name' :headIcon='getUser.imageUrl' :account='getUser.account'/>
       </el-col>
       <el-col :span='21'>
         <div class='home-content'>

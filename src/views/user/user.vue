@@ -151,6 +151,7 @@
         // 处理选择作为头像的图片
         // this.form.imageUrl = URL.createObjectURL(file.raw)
         console.log('图片上传结果：',res)
+        this.form.imageUrl = ''
         this.form.imageUrl = res.fileUrl
         // 头像设置成功的提示
         this.$notify({
@@ -158,6 +159,8 @@
           message: '头像上传成功，已更新头像',
           type: 'success'
         })
+        // 将图片地址传入仓库
+        this.setUser({imageUrl:this.form.imageUrl})
       },
       beforeAvatarUpload(file) {
         // 判断所选择的图片是否符合要求
