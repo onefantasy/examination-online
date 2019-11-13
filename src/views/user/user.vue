@@ -26,8 +26,8 @@
         </el-form-item>
         <el-form-item label="性别">
           <el-radio-group v-model="form.sex">
-            <el-radio label="男"></el-radio>
-            <el-radio label="女"></el-radio>
+            <el-radio :label="1">男</el-radio>
+            <el-radio :label="2">女</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="年龄">
@@ -36,12 +36,13 @@
         <el-form-item label="头像">
           <el-upload
             class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="http://127.0.0.1:8082/image/saveImg"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
             accept=".jpg"
-            >
+            :data="{account:form.account,type:'headIcon'}"
+          >
             <div @click="showImgTip">
               <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -58,12 +59,15 @@
 </template>
 
 <script>
+  import { mapGetters,mapActions } from 'vuex'
+  import { setUserInfo } from 'network/user'
+
   export default {
     data() {
       return {
         form: {
-          account: 't123456789',  // 账号
-          status: 'T',  // 职业
+          account: '',  // 账号
+          status: '',  // 职业
           school: '',   // 所在学校
           class: '',    // 班级
           name: '',   // 用户姓名
@@ -75,33 +79,88 @@
       }
     },
 
+    computed:{
+      ...mapGetters([
+        'getUser'
+      ]),
+    },
+
     watch:{
-      "form.age":function () {
+      "form.age"() {
         // 监听输入的年龄的值，防止出现超出正常年龄范围
         this.form.age < 0 && (this.form.age = 0)
         this.form.age > 120 && (this.form.age = 120)
+      },
+      "getUser":{
+        // 将仓库中的用户信息传递给form
+        // 因为在home中进行数据请求是异步的，有时 不一定能够在created中获取到想要的数据
+        // 所以需要进行监听，及时更新数据
+        handler(){
+          console.log('监听getUser变化')
+          Object.assign(this.form,this.getUser)
+        },
+        deep: true
       }
     },
 
     created(){
+      // 弹出提示对话
       this.$notify({
         title: '提示',
         message: '请将所有必填项目填写完整后保存，才能使用本系统的功能。',
         type: 'warning'
       })
+      // 将仓库中的用户信息传递给form
+      // 因为 有时 直接使用缓存或者网络响应够快，在创建这个页面之前已经获取到用户的数据
+      // 所以，在监听不到getUser的变化,需要这个生命周期中进行赋值
+      Object.assign(this.form,this.getUser)
     },
 
     methods: {
+      ...mapActions([
+        'setUser'
+      ]),
       onSubmit() {
-        console.log('submit!')
+        // 提交表单数据
+        console.log('当前的表单数据： ',this.form)
+        setUserInfo(this.form).then((res) => {
+          if(res.data.isSet) {
+            // 数据保存的成功的提示
+            this.$notify({
+              title: '成功',
+              message: '个人信息保存成功',
+              type: 'success'
+            })
+            // 同步更新仓库的个人用户信息
+            this.setUser(this.form)
+          } else {
+            this.$notify({
+              titil: '提示',
+              message: res.data.description || '请求出错',
+              type: 'warning'
+            })
+          } 
+        }).catch( err => {
+          this.$notify.error({
+            title: '错误',
+            message: '网络请求出错，请稍后重试'
+          })
+        })
       },
       handleAvatarSuccess(res, file) {
         // 处理选择作为头像的图片
-        this.imageUrl = URL.createObjectURL(file.raw)
+        // this.form.imageUrl = URL.createObjectURL(file.raw)
+        console.log('图片上传结果：',res)
+        this.form.imageUrl = res.fileUrl
+        // 头像设置成功的提示
+        this.$notify({
+          title: '成功',
+          message: '头像上传成功，已更新头像',
+          type: 'success'
+        })
       },
       beforeAvatarUpload(file) {
         // 判断所选择的图片是否符合要求
-        console.log('上传图片的信息：',file)
         const isJPG = file.type === 'image/jpeg'
         const isLt2M = file.size / 1024 / 1024 < 2
 
@@ -111,13 +170,15 @@
         if (!isLt2M) {
           this.$message.error('上传头像图片大小不能超过 2MB!')
         }
+
         return isJPG && isLt2M
+        // return false
       },
       showImgTip(){
         // 选择头像时的提示
         this.$notify({
           title: '提示',
-          message: '请使用宽高相等的图片,或者是宽大于高的图片作为头像,那样会有更好的展示效果',
+          message: '请使用宽高相等的图片,或者是宽大于高的图片作为头像,那样会有更好的展示效果,上传头像图片大小不能超过 2MB!',
           type: 'warning'
         })
       }

@@ -15,3 +15,7 @@ export function getUserInfo(data){
   return postJSON('/user/getInfo',data)
 }
 
+// 设置用户信息
+export function setUserInfo(data){
+  return postJSON('/user/setInfo',data)
+}

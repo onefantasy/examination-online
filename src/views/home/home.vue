@@ -28,6 +28,7 @@
 
   import { mapGetters,mapActions } from 'vuex'
   import { getUserInfo } from 'network/user'
+import { async } from 'q';
 
   export default {
     name: "home",
@@ -55,7 +56,6 @@
       ]),
       // 处理主菜单中的选中事件
       menuSelect(index){
-        console.log('home中接收的菜单事件：',typeof index)
         // 跳转子页面
         this.$router.push(this.routers[index])
       }
@@ -63,9 +63,12 @@
     created(){
       // 请求用户的详细信息
       getUserInfo(this.getUser).then(res => {
-        if(!res.data.isGet) this.$toast.showToast(res.data.description || '请求失败')
+        if(!res.data.isGet) {
+          this.$toast.showToast(res.data.description || '请求失败')
+        }
         else {
           this.setUser(res.data.data)
+          console.log('用户的完整信息：',this.getUser)
         }
       },err => {
         this.$toast.showToast('请求出错，请稍后重试')

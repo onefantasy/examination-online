@@ -105,7 +105,7 @@
       },
       headImg(){
         // 确定头像的图片
-        if(!this.headIcon) return 'http://img2.imgtn.bdimg.com/it/u=3750211471,3151515749&fm=26&gp=0.jpg'
+        if(!this.headIcon) return 'http://b-ssl.duitang.com/uploads/blog/201401/07/20140107171234_3W2RC.jpeg'
         return this.headIcon
       }
     },

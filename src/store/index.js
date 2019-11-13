@@ -9,7 +9,7 @@ Vue.use(Vuex)
 
 const state = {
   // 用户信息
-  user:{account: '',password:'',status: ''},
+  user:{account: 't123456789',password:'t123456789',status: ''},
 }
 
 // 2. 实例化对象
