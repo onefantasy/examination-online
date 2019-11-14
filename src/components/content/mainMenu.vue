@@ -47,6 +47,8 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
+
   export default {
     data() {
       return {
@@ -76,6 +78,9 @@
       }
     },
     computed:{
+      ...mapGetters([
+        'getUser'
+      ]),
       carceer(){
         // 确定职业
         let carceer = ''
@@ -105,7 +110,7 @@
       },
       headImg(){
         // 确定头像的图片
-        if(!this.headIcon) return 'http://b-ssl.duitang.com/uploads/blog/201401/07/20140107171234_3W2RC.jpeg'
+        if(!this.headIcon) return 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png'
         return this.headIcon
       }
     },

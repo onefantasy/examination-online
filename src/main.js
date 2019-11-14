@@ -14,8 +14,12 @@ Vue.use(toast)
 // 引入自定义主题的element
 import 'assets/theme/index.css'
 // 引入element 的方法
-import { Notification } from 'element-ui'
+import { 
+  Notification,
+  MessageBox
+} from 'element-ui'
 Vue.prototype.$notify = Notification
+Vue.prototype.$message = MessageBox
 // 引入element的组件
 import {
   Button,

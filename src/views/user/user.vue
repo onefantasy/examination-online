@@ -1,6 +1,6 @@
 <template>
 <!-- 个人信息 -->
-  <div class="p20">
+  <div class="p20 user-box">
     <el-card shadow="hover">
       <el-form ref="form" :model="form" label-width="100px">
         <el-form-item label="账号">
@@ -44,14 +44,14 @@
             :data="{account:form.account,type:'headIcon'}"
           >
             <div @click="showImgTip">
-              <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
+              <img v-if="form.headIcon" :src="form.headIcon" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </div>
           </el-upload>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit">保存</el-button>
-          <el-button>取消</el-button>
+          <el-button @click="cancel">取消</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -74,10 +74,13 @@
           number: '',   // 编号，学号或者教师编号
           sex: '',    // 性别
           age: 0,  // 年龄
-          imageUrl: ''   // 头像图片的路径
+          headIcon: ''   // 头像图片的路径
         }
       }
     },
+
+    // 获取刷新页面的方法
+    inject:['reload','refreshMainMenu'],
 
     computed:{
       ...mapGetters([
@@ -104,12 +107,6 @@
     },
 
     created(){
-      // 弹出提示对话
-      this.$notify({
-        title: '提示',
-        message: '请将所有必填项目填写完整后保存，才能使用本系统的功能。',
-        type: 'warning'
-      })
       // 将仓库中的用户信息传递给form
       // 因为 有时 直接使用缓存或者网络响应够快，在创建这个页面之前已经获取到用户的数据
       // 所以，在监听不到getUser的变化,需要这个生命周期中进行赋值
@@ -120,10 +117,18 @@
       ...mapActions([
         'setUser'
       ]),
-      onSubmit() {
+      onSubmit(){
+        // 保存用户信息的提示
+        const loading = this.$loading({
+          lock: true,
+          text: '保存中...',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        })
         // 提交表单数据
-        console.log('当前的表单数据： ',this.form)
-        setUserInfo(this.form).then((res) => {
+        setUserInfo(this.form)
+        .then((res) => {
+          loading.close()
           if(res.data.isSet) {
             // 数据保存的成功的提示
             this.$notify({
@@ -133,6 +138,8 @@
             })
             // 同步更新仓库的个人用户信息
             this.setUser(this.form)
+            // 刷新页面
+            this.reload()
           } else {
             this.$notify({
               titil: '提示',
@@ -140,7 +147,8 @@
               type: 'warning'
             })
           } 
-        }).catch( err => {
+        })
+        .catch( err => {
           this.$notify.error({
             title: '错误',
             message: '网络请求出错，请稍后重试'
@@ -149,18 +157,24 @@
       },
       handleAvatarSuccess(res, file) {
         // 处理选择作为头像的图片
-        // this.form.imageUrl = URL.createObjectURL(file.raw)
-        console.log('图片上传结果：',res)
-        this.form.imageUrl = ''
-        this.form.imageUrl = res.fileUrl
+
+        // 在图片地址添加没有任何影响的随机数，用于更新图片
+        // 因为图片改变之后，地址也没有任何变化，所以浏览器不会进行重新加载图片，导致新图片无法及时展示出来
+        // 所以需要加上随机数，让浏览器以为是另一张图片，进行重新加载
+        const temporary = res.fileUrl + `?t=${Math.random()/1000}`
+        this.form.headIcon = temporary
+
         // 头像设置成功的提示
         this.$notify({
           title: '成功',
           message: '头像上传成功，已更新头像',
           type: 'success'
         })
+
         // 将图片地址传入仓库
-        this.setUser({imageUrl:this.form.imageUrl})
+        this.setUser({headIcon:temporary})
+        // 刷新mainMenu
+        this.refreshMainMenu()
       },
       beforeAvatarUpload(file) {
         // 判断所选择的图片是否符合要求
@@ -184,6 +198,29 @@
           message: '请使用宽高相等的图片,或者是宽大于高的图片作为头像,那样会有更好的展示效果,上传头像图片大小不能超过 2MB!',
           type: 'warning'
         })
+      },
+      // 取消修改的内容
+      cancel(){
+        this.$message.confirm('此操作将放弃已修改的内容, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          // 撤销修改，重置数据
+          Object.assign(this.form,this.getUser)
+          this.$notify({
+            title: '撤销',
+            type: 'success',
+            message: '撤销修改成功!'
+          });
+        }).catch(() => {
+          this.$notify({
+            title: '撤销',
+            type: 'info',
+            message: '不进行撤销'
+          });
+        });
       }
     },
 
@@ -192,7 +229,9 @@
 
     beforeDestroy(){
       // 销毁页面之前，关闭所有的通知
-      this.$notify.closeAll()
+      // 若果不是刷新页面，则进行销毁通知窗口
+      if(this.$route.fullPath !== '/home/user')
+        this.$notify.closeAll()
     }
 }
 </script>

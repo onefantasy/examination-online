@@ -3,17 +3,17 @@
     <el-row>
       <el-col :span='3'>
         <!-- 主菜单的内容 -->
-        <mainMenu @selected='menuSelect' :carceerTag='getUser.status' :name='getUser.name' :headIcon='getUser.imageUrl' :account='getUser.account'/>
+        <mainMenu @selected='menuSelect' :carceerTag='getUser.status' :name='getUser.name' :headIcon='getUser.headIcon' :account='getUser.account' v-if="!isRefreshMainMenu"/>
       </el-col>
-      <el-col :span='21'>
-        <div class='home-content'>
-          <el-scrollbar syle='height: 100%'>
+      <el-col :span="21">
+        <div class="home-content">
+          <el-scrollbar class="content-srcollbar">
             <!-- 页面子路由 -->
             <!-- 此处加个div的原因：
                   1. 解决替换router-view的子页面没有class（原因未明，估计是el-scrollbar的原因）
                   2. 设定所有子页面的高度
              -->
-            <div class="router-view">
+            <div>
               <router-view></router-view>
             </div>
           </el-scrollbar>
@@ -28,13 +28,18 @@
 
   import { mapGetters,mapActions } from 'vuex'
   import { getUserInfo } from 'network/user'
-import { async } from 'q';
+  // import { async } from 'q';
 
   export default {
     name: "home",
+    provide(){
+      return {
+        // 刷新mainMenu的方法，参考App.vue下的reload方法
+        refreshMainMenu: this.refreshMainMenu
+      }
+    },
     data() {
       return {
-        // 子页面的全部路由
         routers:[
           '/home/welcome',
           '/home/paper',
@@ -42,8 +47,10 @@ import { async } from 'q';
           '/home/grade',
           '/home/user',
           '/home/topic'
-        ]
-      };
+        ],
+        // 是否刷新mainMenu的标志
+        isRefreshMainMenu: false,
+      }
     },
     computed:{
       ...mapGetters([
@@ -58,11 +65,28 @@ import { async } from 'q';
       menuSelect(index){
         // 跳转子页面
         this.$router.push(this.routers[index])
+      },
+      // 刷新mainMenu
+      refreshMainMenu(){
+        this.isRefreshMainMenu = true   // 刷新
+        this.$nextTick(function(){
+          this.isRefreshMainMenu = false  // 刷新之后就展示
+        })
       }
     },
     created(){
+      // 请求用户信息的加载提示
+      const loading = this.$loading({
+        lock: true,
+        text: '获取信息中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
       // 请求用户的详细信息
       getUserInfo(this.getUser).then(res => {
+        // 关闭加载提示
+        loading.close()
+
         if(!res.data.isGet) {
           this.$toast.showToast(res.data.description || '请求失败')
         }
@@ -95,9 +119,10 @@ import { async } from 'q';
 
   .home-content{
     height: 100vh;
+    background-color: var(--color-background);
   }
 
-  .router-view{
+  .content-srcollbar{
     height: 100vh;
   }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- <keep-alive> -->
-      <router-view></router-view>
+      <router-view v-if="!isRefresh"></router-view>
     <!-- </keep-alive> -->
   </div>
 </template>
@@ -11,7 +11,20 @@
   import { mapActions } from 'vuex'
 
   export default {
+    // 传递给所有子组件的方法
+    provide(){
+      return {
+        reload: this.reload   // 刷新页面的方法
+      }
+    },
     name: 'app',
+    data(){
+      return {
+        // 是否刷新router-view页面的变量
+        // 本质就是v-if来重新渲染页面
+        isRefresh: false   
+      }
+    },
     beforeCreate:async function(){
       /* if(!db.getLocalStorage('account') || !db.getLocalStorage('password')){
         // 如果本地不存在用户的信息缓存，则跳转到登录页面
@@ -32,6 +45,13 @@
       ...mapActions([
         'setUser'
       ]),
+      // 刷新页面的方法
+      reload(){
+        this.isRefresh = true   // 刷新
+        this.$nextTick(function(){
+          this.isRefresh = false  // 刷新之后就展示
+        })
+      }
     },
     components: {
 
