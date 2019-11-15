@@ -96,7 +96,6 @@
         // 因为在home中进行数据请求是异步的，有时 不一定能够在created中获取到想要的数据
         // 所以需要进行监听，及时更新数据
         handler(){
-          console.log('监听getUser变化')
           Object.assign(this.form,this.getUser)
         },
         deep: true

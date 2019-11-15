@@ -95,7 +95,6 @@
         }
         else {
           this.setUser(res.data.data)
-          console.log('用户的完整信息：',this.getUser)
         }
       },err => {
         this.$toast.showToast('请求出错，请稍后重试')

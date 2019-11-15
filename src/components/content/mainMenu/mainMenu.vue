@@ -117,7 +117,6 @@
     methods:{
       // 点击菜单的选项
       handleSelect(index){
-        console.log('点击菜单的选项：',index)
         // 告诉父组件已经选中的功能
         this.$emit('selected',index)
       },

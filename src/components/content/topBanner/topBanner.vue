@@ -10,6 +10,8 @@
 </template>
 
 <script>
+  import db from 'common/db.js'
+
   export default {
     data() {
       return {
@@ -31,7 +33,24 @@
     methods:{
       // 退出登录
       logout(){
-        
+        this.$message.confirm('确定要退出当前登录?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          // 删除本地的缓存
+          db.delLocalStorage('account')
+          db.delLocalStorage('password')
+          // 跳转到登陆页面
+          this.$router.push('/')
+        }).catch(() => {
+          this.$notify({
+            title: '退出',
+            message: '取消退出',
+            type: 'info'
+          })
+        })
       }
     },
     components:{
