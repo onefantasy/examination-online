@@ -1,6 +1,6 @@
 <template>
 <!-- 出卷 -->
-  <div class="p20">
+  <div class="p20 topic-box">
     我是出卷页面
   </div>
 </template>
@@ -19,5 +19,7 @@
 </script>
 
 <style scoped>
-
+  .topic-box{
+    
+  }
 </style>

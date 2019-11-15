@@ -6,6 +6,9 @@
         <mainMenu @selected='menuSelect' :carceerTag='getUser.status' :name='getUser.name' :headIcon='getUser.headIcon' :account='getUser.account' v-if="!isRefreshMainMenu"/>
       </el-col>
       <el-col :span="21">
+        <!-- 顶部导航栏 -->
+        <topBanner />
+        <!-- 主页的内容部分 -->
         <div class="home-content">
           <el-scrollbar class="content-srcollbar">
             <!-- 页面子路由 -->
@@ -24,11 +27,11 @@
 </template>
 
 <script>
-  import mainMenu from 'components/content/mainMenu'
+  import mainMenu from 'components/content/mainMenu/mainMenu'
+  import topBanner from 'components/content/topBanner/topBanner'
 
   import { mapGetters,mapActions } from 'vuex'
   import { getUserInfo } from 'network/user'
-  // import { async } from 'q';
 
   export default {
     name: "home",
@@ -100,6 +103,7 @@
     },
     components: {
       mainMenu,
+      topBanner,
     },
   }
 </script>
@@ -107,7 +111,7 @@
 <style>
 /* 区域滚动,禁止x轴滚动，隐藏x轴的滚动条 */
   .home-content .el-scrollbar__wrap{
-      overflow-x: hidden;
+    overflow-x: hidden;
   }
 </style>
 
@@ -118,11 +122,11 @@
   }
 
   .home-content{
-    height: 100vh;
-    background-color: var(--color-background);
+    height: calc(100vh - 68px);
+    /* background-color: var(--color-background); */
   }
 
   .content-srcollbar{
-    height: 100vh;
+    height: calc(100vh - 68px);
   }
 </style>

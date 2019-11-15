@@ -51,7 +51,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit">保存</el-button>
-          <el-button @click="cancel">取消</el-button>
+          <el-button @click="cancel">撤销</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -78,9 +78,6 @@
         }
       }
     },
-
-    // 获取刷新页面的方法
-    inject:['reload','refreshMainMenu'],
 
     computed:{
       ...mapGetters([
@@ -132,17 +129,15 @@
           if(res.data.isSet) {
             // 数据保存的成功的提示
             this.$notify({
-              title: '成功',
+              title: '保存',
               message: '个人信息保存成功',
               type: 'success'
             })
             // 同步更新仓库的个人用户信息
             this.setUser(this.form)
-            // 刷新页面
-            this.reload()
           } else {
             this.$notify({
-              titil: '提示',
+              titil: '保存',
               message: res.data.description || '请求出错',
               type: 'warning'
             })
@@ -150,14 +145,20 @@
         })
         .catch( err => {
           this.$notify.error({
-            title: '错误',
+            title: '保存',
             message: '网络请求出错，请稍后重试'
           })
         })
       },
       handleAvatarSuccess(res, file) {
         // 处理选择作为头像的图片
-
+        if (!res.fileUrl) {
+          this.$notify.error({
+            title: '图片',
+            message: '图片上传失败，请稍后重试'
+          })
+          return false
+        }
         // 在图片地址添加没有任何影响的随机数，用于更新图片
         // 因为图片改变之后，地址也没有任何变化，所以浏览器不会进行重新加载图片，导致新图片无法及时展示出来
         // 所以需要加上随机数，让浏览器以为是另一张图片，进行重新加载
@@ -166,15 +167,13 @@
 
         // 头像设置成功的提示
         this.$notify({
-          title: '成功',
-          message: '头像上传成功，已更新头像',
+          title: '图片',
+          message: '图片上传成功，已更新头像',
           type: 'success'
         })
 
         // 将图片地址传入仓库
         this.setUser({headIcon:temporary})
-        // 刷新mainMenu
-        this.refreshMainMenu()
       },
       beforeAvatarUpload(file) {
         // 判断所选择的图片是否符合要求
@@ -194,7 +193,7 @@
       showImgTip(){
         // 选择头像时的提示
         this.$notify({
-          title: '提示',
+          title: '图片',
           message: '请使用宽高相等的图片,或者是宽大于高的图片作为头像,那样会有更好的展示效果,上传头像图片大小不能超过 2MB!',
           type: 'warning'
         })
@@ -229,9 +228,7 @@
 
     beforeDestroy(){
       // 销毁页面之前，关闭所有的通知
-      // 若果不是刷新页面，则进行销毁通知窗口
-      if(this.$route.fullPath !== '/home/user')
-        this.$notify.closeAll()
+      this.$notify.closeAll()
     }
 }
 </script>
