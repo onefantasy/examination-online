@@ -78,7 +78,6 @@
       },
       // 提交
       submitForm(formName) {
-
         this.$refs[formName].validate((valid) => {
           if (valid) {
             // 登录提示
@@ -99,6 +98,7 @@
                 this.keepPassword()
                 this.resetForm('ruleForm')
                 this.$router.push('/home')
+                console.log('获取到的cookie:',document.cookie)
               }else{
                 this.$toast.showToast(res.data.description || '请求出错')
               }

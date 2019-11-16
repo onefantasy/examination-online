@@ -4,8 +4,12 @@
       <el-breadcrumb-item>在线考试系统</el-breadcrumb-item>
       <el-breadcrumb-item>{{titles[titleIndex]}}</el-breadcrumb-item>
     </el-breadcrumb>
-    <!-- 退出登录按钮 -->
-    <el-button type="primary" class="logout" @click="logout">退出</el-button>
+    <div class='button-box'>
+      <!-- 刷新按钮 -->
+      <el-button type="success" @click="refresh">刷新</el-button>
+      <!-- 退出登录按钮 -->
+      <el-button type="primary" @click="logout">退出</el-button>
+    </div>
   </div>
 </template>
 
@@ -25,7 +29,9 @@
         }
       }
     },
+    inject:['reload'],
     computed:{
+      // 找出当前页面的索引值
       titleIndex(){
         return this.$route.fullPath
       },
@@ -51,6 +57,17 @@
             type: 'info'
           })
         })
+      },
+      // 刷新页面
+      refresh(){
+        // this.reload()
+        this.$router.go(0)
+        this.$notify({
+          title: '刷新',
+          message: '刷新页面成功',
+          type: 'success'
+        })
+        console.log('页面已经刷新')
       }
     },
     components:{
@@ -79,7 +96,7 @@
     position: relative;
   }
 
-  .logout{
+  .button-box{
     position: absolute;
     top: 50%;
     right: 20px;

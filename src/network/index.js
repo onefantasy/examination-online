@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { baseURL,timeout } from './config'
+import CONFIG from './config'
 
 /*
 * config:{
@@ -9,10 +9,7 @@ import { baseURL,timeout } from './config'
 * */
 
 export function getJSON(config){
-  const instance = axios.create({
-    baseURL,
-    timeout,
-  })
+  const instance = axios.create(CONFIG)
 
   // 请求拦截器
   /*instance.interceptors.request.use(config => {
@@ -34,10 +31,7 @@ export function getJSON(config){
 }
 
 export function postJSON(url,data){
-  const instance = axios.create({
-    baseURL,
-    timeout,
-  })
+  const instance = axios.create(CONFIG)
 
   // 请求拦截器
   /*instance.interceptors.request.use(config => {
@@ -52,6 +46,8 @@ export function postJSON(url,data){
    instance.interceptors.response.use(response => {
     // 请求成功的拦截
     // console.log('请求响应的数据类型：',typeof response.data);
+    // 获取响应请求的里面的请求头
+    console.log('请求头中的数据：',response.headers)
     return response
    },err => {
     // 请求失败的拦截
