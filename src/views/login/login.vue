@@ -22,6 +22,7 @@
 <script>
   import loginForm from './children/loginForm'
   import registerForm from './children/registerForm'
+  import { mapActions } from 'vuex'
 
   export default {
     name: "login",
@@ -30,7 +31,14 @@
         currentTab: 2,
       };
     },
+    beforeCreate(){
+      // 一旦进入登录页面，就清除sessionStorage
+      window.sessionStorage.removeItem('store')
+    },
     methods: {
+      ...mapActions([
+        'setUser'
+      ]),
       // 更改显示的表单
       changeTab(index){
         this.currentTab = index;

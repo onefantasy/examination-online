@@ -42,6 +42,7 @@
             :before-upload="beforeAvatarUpload"
             accept=".jpg"
             :data="{account:form.account,type:'headIcon'}"
+            :with-credentials="true"
           >
             <div @click="showImgTip">
               <img v-if="form.headIcon" :src="form.headIcon" class="avatar">

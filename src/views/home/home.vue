@@ -89,7 +89,6 @@
       getUserInfo(this.getUser).then(res => {
         // 关闭加载提示
         loading.close()
-
         if(!res.data.isGet) {
           this.$toast.showToast(res.data.description || '请求失败')
         }

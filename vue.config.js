@@ -1,3 +1,5 @@
+// import webConfig from 'common/config'
+
 module.exports = {
     configureWebpack:{
         resolve: {

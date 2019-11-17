@@ -1,5 +1,6 @@
 import axios from 'axios'
 import CONFIG from './config'
+import webConfig from 'common/config.js'
 
 /*
 * config:{
@@ -19,13 +20,20 @@ export function getJSON(config){
   });*/
 
   // 响应拦截器
-  /*instance.interceptors.response.use(response => {
+  instance.interceptors.response.use(response => {
     // 请求成功的拦截
-
+    // console.log('请求响应的数据类型：',typeof response.data);
+    // 请求返回的数据
+    console.log('请求返回的数据：',response)
+    if(response.data.isReLogin){
+      console.log('需要进行重新登陆')
+      window.location.href = webConfig.address
+    }
+    return response
   },err => {
     // 请求失败的拦截
-
-  });*/
+    console.warn('请求失败!')
+  })
 
   return instance(config)
 }
@@ -44,14 +52,18 @@ export function postJSON(url,data){
 */
   // 响应拦截器
    instance.interceptors.response.use(response => {
-    // 请求成功的拦截
-    // console.log('请求响应的数据类型：',typeof response.data);
-    // 获取响应请求的里面的请求头
-    console.log('请求头中的数据：',response.headers)
-    return response
+     // 请求成功的拦截
+     // console.log('请求响应的数据类型：',typeof response.data);
+     // 请求返回的数据
+     console.log('请求返回的数据：',response)
+     if(response.data.isReLogin){
+       console.log('需要进行重新登陆')
+       window.location.href = webConfig.address
+     }
+     return response
    },err => {
-    // 请求失败的拦截
-    console.warn('请求失败!')
+     // 请求失败的拦截
+     console.warn('请求失败!')
    })
 
   return instance.post(url,data)

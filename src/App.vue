@@ -8,7 +8,7 @@
 
 <script>
   import db from 'common/db'
-  import { mapActions } from 'vuex'
+  import { mapActions,mapGetters } from 'vuex'
 
   export default {
     // 传递给所有子组件的方法
@@ -25,21 +25,27 @@
         isRefresh: false   
       }
     },
+    computed:{
+      ...mapGetters([
+        'getUser'
+      ]),
+    },
     beforeCreate:async function(){
-      /* if(!db.getLocalStorage('account') || !db.getLocalStorage('password')){
-        // 如果本地不存在用户的信息缓存，则跳转到登录页面
-        this.$router.push('/')
-      } else {
-        // 注意：
-        // 设置定时器等待vuex初始化完成，才能写入数据
-        // 使用await阻止进行下个页面的操作，因为用户的账号信息还没存入仓库，无法获取
-        await setTimeout(()=>{})
-        this.setUser({
-          account: db.getLocalStorage('account'),
-          password: db.getLocalStorage('password'),
-          status: db.getLocalStorage('status')
-        })
-      } */
+      // 如果存在sessionStorage，说明是，进行了刷新操作，则进行获取
+      await setTimeout(()=>{})
+      const data = window.sessionStorage.getItem('store')
+      console.log('sessionStorage读取结果:',data)
+      if(data) this.setUser(JSON.parse(data))
+
+      // 在页面刷新前设置sessionStorage，通过注册监听事件执行相应的代码
+      window.addEventListener('beforeunload',()=>{
+        const data = {
+          account: this.getUser.account,
+          password: this.getUser.password
+        }
+        console.log('sessionStorage设置结果：',data)
+        window.sessionStorage.setItem('store',JSON.stringify(data))
+      })
     },
     methods:{
       ...mapActions([

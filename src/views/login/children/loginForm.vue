@@ -58,6 +58,18 @@
         }
       }
     },
+    created(){
+      // 检测本地是否保存账号与密码
+      if(db.getLocalStorage('account') && db.getLocalStorage('password')){
+        // 将本地保存的账号与密码自动输入
+        this.ruleForm = {
+          account: db.getLocalStorage('account'),
+          password: db.getLocalStorage('password')
+        }
+        // 设置保存密码
+        this.isKeep = true
+      }
+    },
     methods: {
       ...mapActions([
         'setUser'
@@ -98,7 +110,6 @@
                 this.keepPassword()
                 this.resetForm('ruleForm')
                 this.$router.push('/home')
-                console.log('获取到的cookie:',document.cookie)
               }else{
                 this.$toast.showToast(res.data.description || '请求出错')
               }
