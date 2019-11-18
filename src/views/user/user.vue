@@ -43,6 +43,7 @@
             accept=".jpg"
             :data="{account:form.account,type:'headIcon'}"
             :with-credentials="true"
+            :headers="{'token':token}"
           >
             <div @click="showImgTip">
               <img v-if="form.headIcon" :src="form.headIcon" class="avatar">
@@ -76,7 +77,8 @@
           sex: '',    // 性别
           age: 0,  // 年龄
           headIcon: ''   // 头像图片的路径
-        }
+        },
+        token: window.sessionStorage.getItem('token'),
       }
     },
 
@@ -151,6 +153,11 @@
         })
       },
       handleAvatarSuccess(res, file) {
+        // 设置token 或者 刷新token
+        console.log('保存图片时更新的token：',res.token)
+        !!res.token && window.sessionStorage.setItem('token',res.token)
+        this.token = res.token
+
         // 处理选择作为头像的图片
         if (!res.fileUrl) {
           this.$notify.error({
@@ -181,10 +188,18 @@
         const isLt2M = file.size / 1024 / 1024 < 2
 
         if (!isJPG) {
-          this.$message.error('上传头像图片只能是 JPG 格式!')
+          // this.$message.error('上传头像图片只能是 JPG 格式!')
+          this.$notify.error({
+            title: '图片',
+            message: '上传头像图片只能是 JPG 格式!'
+          })
         }
         if (!isLt2M) {
-          this.$message.error('上传头像图片大小不能超过 2MB!')
+          // this.$message.error('上传头像图片大小不能超过 2MB!')
+          this.$notify.error({
+            title: '图片',
+            message: '上传头像图片大小不能超过 2MB!'
+          })
         }
 
         return isJPG && isLt2M
