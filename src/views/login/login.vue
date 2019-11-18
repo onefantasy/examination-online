@@ -32,7 +32,7 @@
       };
     },
     beforeCreate(){
-      // 一旦进入登录页面，就清除sessionStorage
+      // 一旦进入登录页面，就清除sessionStorage，避免对下次登陆造成干扰
       window.sessionStorage.removeItem('store')
       window.sessionStorage.removeItem('token')
     },

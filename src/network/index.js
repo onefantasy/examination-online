@@ -22,7 +22,7 @@ export function getJSON(config){
 
   // 响应拦截器
   instance.interceptors.response.use(response => {
-    // 将token存入sesssionStorage
+    // 将token存入sessionStorage
     response.data.token && window.sessionStorage.setItem('token',response.data.token)
     // 如果token超时，则跳转到登录页面
     response.data.isReLogin && (window.location.href = webConfig.address)
