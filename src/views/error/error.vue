@@ -1,9 +1,9 @@
 <template>
   <div class="error-box">
     <div class="error-title">404 NOT FOUND</div>
-    <div>是不是觉得画风不对？</div>
-    <div>因为你走错路了</div>
     <div>天若有情天亦老，人间正道是沧桑</div>
+    <div>是不是觉得画风不对？</div>
+    <div>因为你走错了</div>
     <div @click="goLogin" class="login-link">点我返回登陆页面吧</div>
   </div>
 </template>
