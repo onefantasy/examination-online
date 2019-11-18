@@ -34,6 +34,7 @@
     beforeCreate(){
       // 一旦进入登录页面，就清除sessionStorage
       window.sessionStorage.removeItem('store')
+      window.sessionStorage.removeItem('token')
     },
     methods: {
       ...mapActions([

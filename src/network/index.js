@@ -10,6 +10,7 @@ import webConfig from 'common/config.js'
 * */
 
 export function getJSON(config){
+
   const instance = axios.create(CONFIG)
 
   // 请求拦截器
@@ -21,14 +22,10 @@ export function getJSON(config){
 
   // 响应拦截器
   instance.interceptors.response.use(response => {
-    // 请求成功的拦截
-    // console.log('请求响应的数据类型：',typeof response.data);
-    // 请求返回的数据
-    console.log('请求返回的数据：',response)
-    if(response.data.isReLogin){
-      console.log('需要进行重新登陆')
-      window.location.href = webConfig.address
-    }
+    // 将token存入sesssionStorage
+    response.data.token && window.sessionStorage.setItem('token',response.data.token)
+    // 如果token超时，则跳转到登录页面
+    response.data.isReLogin && (window.location.href = webConfig.address)
     return response
   },err => {
     // 请求失败的拦截
@@ -42,29 +39,30 @@ export function postJSON(url,data){
   const instance = axios.create(CONFIG)
 
   // 请求拦截器
-  /*instance.interceptors.request.use(config => {
-    console.log('请求将携带的数据：',config);
-    return config;
-  },err => {
-    console.log('请求将携带的数据出错了:',err);
-    return Promise.reject(err)
-  });
-*/
-  // 响应拦截器
-   instance.interceptors.response.use(response => {
-     // 请求成功的拦截
-     // console.log('请求响应的数据类型：',typeof response.data);
-     // 请求返回的数据
-     console.log('请求返回的数据：',response)
-     if(response.data.isReLogin){
-       console.log('需要进行重新登陆')
-       window.location.href = webConfig.address
-     }
-     return response
-   },err => {
-     // 请求失败的拦截
-     console.warn('请求失败!')
-   })
+  // instance.interceptors.request.use(config => {
+  //   console.log('请求将携带的数据：',config);
+  //   return config;
+  // },err => {
+  //   console.log('请求将携带的数据出错了:',err);
+  //   return Promise.reject(err)
+  // });
 
-  return instance.post(url,data)
+  // 响应拦截器
+  instance.interceptors.response.use(response => {
+    // 将token存入sessionStorage
+    response.data.token && window.sessionStorage.setItem('token',response.data.token)
+    //如果token超时，则跳转到登录页面
+    response.data.isReLogin && (window.location.href = webConfig.address)
+
+    return response
+  },err => {
+    // 请求失败的拦截
+    console.warn('请求失败!')
+  })
+
+  const headers = {headers:{
+    token: window.sessionStorage.getItem('token') || ''
+  }}
+
+  return instance.post(url,data,headers)
 }
