@@ -15,6 +15,10 @@
   display: none;
 }
 
+// 降低 loading盒子的层级 （z-index）
+.el-loading-mask {
+  z-index: 10;
+}
 
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
