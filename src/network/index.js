@@ -21,7 +21,7 @@ service.interceptors.request.use(
 
     if (token) {
       // let each request carry tokent
-      // ['X-Token'] is a custom headers key
+      // ['token'] is a custom headers key
       // please modify it according to the actual situation
       config.headers['token'] = token
     }
