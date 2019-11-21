@@ -62,7 +62,7 @@
 
 <script>
   import { mapGetters,mapActions } from 'vuex'
-  import { setUserInfo } from 'network/user'
+  // import { setUserInfo } from 'network/user'
 
   export default {
     data() {
@@ -125,27 +125,25 @@
           background: 'rgba(0, 0, 0, 0.7)'
         })
         // 提交表单数据
-        setUserInfo(this.form)
-        .then((res) => {
+        this.$store.dispatch('user/setInfo',this.form).then(res => {
           loading.close()
-          if(res.data.isSet) {
-            // 数据保存的成功的提示
+          if(res.data.isSet){
+            // 数据保存成功
             this.$notify({
               title: '保存',
               message: '个人信息保存成功',
               type: 'success'
             })
-            // 同步更新仓库的个人用户信息
-            this.setUser(this.form)
           } else {
-            this.$notify({
-              titil: '保存',
-              message: res.data.description || '请求出错',
-              type: 'warning'
+            // 数据保存失败
+            this.$notify.error({
+              title: '保存',
+              message: res.data.description || '请求出错'
             })
-          } 
-        })
-        .catch( err => {
+          }
+        }).catch(err => {
+          loading.close()
+          console.log('更改用户信息出错：',err)
           this.$notify.error({
             title: '保存',
             message: '网络请求出错，请稍后重试'
@@ -154,7 +152,6 @@
       },
       handleAvatarSuccess(res, file) {
         // 设置token 或者 刷新token
-        console.log('保存图片时更新的token：',res.token)
         !!res.token && window.sessionStorage.setItem('token',res.token)
         this.token = res.token
 
@@ -180,7 +177,7 @@
         })
 
         // 将图片地址传入仓库
-        this.setUser({headIcon:temporary})
+        this.$store.commit('user/SET_INFO',{headIcon:temporary})
       },
       beforeAvatarUpload(file) {
         // 判断所选择的图片是否符合要求

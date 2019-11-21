@@ -22,9 +22,8 @@
 </template>
 
 <script>
-  import { provingId } from "network/user"
+  import { provingId} from "network/user"
   import db from 'common/db'
-  import { mapActions } from 'vuex'
 
   export default {
     data() {
@@ -71,9 +70,6 @@
       }
     },
     methods: {
-      ...mapActions([
-        'setUser'
-      ]),
       // 记住密码的操作
       keepPassword(){
         // 记住密码
@@ -100,21 +96,17 @@
               background: 'rgba(0, 0, 0, 0.7)'
             })
             // 登录验证
-            provingId(this.ruleForm).then(res => {
+            this.$store.dispatch('user/login',this.ruleForm).then(res => {
               loading.close()
               if(res.data.isLogin){
                 this.$toast.showToast('登录成功')
-                // 将账号信息存入仓库
-                this.ruleForm.status = res.data.status
-                this.setUser(this.ruleForm)
                 this.keepPassword()
                 this.resetForm('ruleForm')
                 this.$router.push('/home')
-              }else{
-                this.$toast.showToast(res.data.description || '请求出错')
               }
-            }).catch( err => {
-              console.log('验证失败返回结果：',err)
+            }).catch(err => {
+              loading.close()
+              console.log('验证失败返回结果:',err)
               this.$toast.showToast('登录失败')
             })
           } else {

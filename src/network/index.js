@@ -2,67 +2,93 @@ import axios from 'axios'
 import CONFIG from './config'
 import webConfig from 'common/config.js'
 
-/*
-* config:{
-*   url: String , //请求路径
-*   params: {}, // 参数
-* }
-* */
+import { MessageBox, Message } from 'element-ui'
 
-export function getJSON(config){
+// create an axios instance
+const service = axios.create({
+  // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  baseURL: CONFIG.baseURL,
+  // withCredentials: true, // send cookies when cross-domain requests
+  timeout: CONFIG.timeout // request timeout
+})
 
-  const instance = axios.create(CONFIG)
+// request interceptor
+service.interceptors.request.use(
+  config => {
+    // do something before request is sent
 
-  // 请求拦截器
-  /*instance.interceptors.request.use(config => {
+    const token = window.sessionStorage.getItem('token')
 
-  },err => {
+    if (token) {
+      // let each request carry tokent
+      // ['X-Token'] is a custom headers key
+      // please modify it according to the actual situation
+      config.headers['token'] = token
+    }
+    return config
+  },
+  error => {
+    // do something with request error
+    console.log('请求拦截检测到错误：',error) // for debug
+    return Promise.reject(error)
+  }
+)
 
-  });*/
+// response interceptor
+service.interceptors.response.use(
+  /**
+   * If you want to get http information such as headers or status
+   * Please return  response => response
+  */
 
-  // 响应拦截器
-  instance.interceptors.response.use(response => {
-    // 将token存入sessionStorage
+  /**
+   * Determine the request status by custom code
+   * Here is just an example
+   * You can also judge the status by HTTP Status Code
+   */
+  response => {
+    // 设置token
     response.data.token && window.sessionStorage.setItem('token',response.data.token)
-    // 如果token超时，则跳转到登录页面
-    response.data.isReLogin && (window.location.href = webConfig.address)
-    return response
-  },err => {
-    // 请求失败的拦截
-    console.warn('请求失败!')
-  })
 
-  return instance(config)
-}
+    console.log('请求返回的数据： ',response)
 
-export function postJSON(url,data){
-  const instance = axios.create(CONFIG)
+    const res = response.data
 
-  // 请求拦截器
-  // instance.interceptors.request.use(config => {
-  //   console.log('请求将携带的数据：',config);
-  //   return config;
-  // },err => {
-  //   console.log('请求将携带的数据出错了:',err);
-  //   return Promise.reject(err)
-  // });
+    // if the custom code is not 20000, it is judged as an error.
+    if (res.errcode === 0) {
+      Message({
+        message: res.message || 'Error',
+        type: 'error',
+        duration: 5 * 1000
+      })
 
-  // 响应拦截器
-  instance.interceptors.response.use(response => {
-    // 将token存入sessionStorage
-    response.data.token && window.sessionStorage.setItem('token',response.data.token)
-    //如果token超时，则跳转到登录页面
-    response.data.isReLogin && (window.location.href = webConfig.address)
+      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+      if (res.errcode === 50008 || res.errcode === 50012 || res.errcode === 50014) {
+        // to re-login
+        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
+          confirmButtonText: 'Re-Login',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          store.dispatch('user/resetToken').then(() => {
+            location.reload()
+          })
+        })
+      }
+      return Promise.reject(new Error(res.message || 'Error'))
+    } else {
+      return response
+    }
+  },
+  error => {
+    console.log('响应拦截到错误：' + error) // for debug
+    Message({
+      message: error.message,
+      type: 'error',
+      duration: 5 * 1000
+    })
+    return Promise.reject(error)
+  }
+)
 
-    return response
-  },err => {
-    // 请求失败的拦截
-    console.warn('请求失败!')
-  })
-
-  const headers = {headers:{
-    token: window.sessionStorage.getItem('token') || ''
-  }}
-
-  return instance.post(url,data,headers)
-}
+export default service

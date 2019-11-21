@@ -8,7 +8,7 @@
 
 <script>
   import db from 'common/db'
-  import { mapActions,mapGetters } from 'vuex'
+  import { mapGetters } from 'vuex'
 
   export default {
     // 传递给所有子组件的方法
@@ -35,7 +35,7 @@
       await setTimeout(()=>{})
       const data = window.sessionStorage.getItem('store')
       console.log('sessionStorage读取结果:',data)
-      if(data) this.setUser(JSON.parse(data))
+      if(data) this.$store.commit('user/SET_INFO',JSON.parse(data))
 
       // 在页面刷新前设置sessionStorage，通过注册监听事件执行相应的代码
       window.addEventListener('beforeunload',()=>{
@@ -48,9 +48,6 @@
       })
     },
     methods:{
-      ...mapActions([
-        'setUser'
-      ]),
       // 刷新页面的方法
       reload(){
         this.isRefresh = true   // 刷新

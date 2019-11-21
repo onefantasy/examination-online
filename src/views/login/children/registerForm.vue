@@ -94,7 +94,7 @@
               background: 'rgba(0, 0, 0, 0.7)'
             })
             // 验证成功
-            register(this.ruleForm).then(res => {
+            /* register(this.ruleForm).then(res => {
               loading.close()
               if(res.data.isRegister === 0){
                 // 注册失败
@@ -105,6 +105,21 @@
                 this.resetForm('ruleForm')
                 this.$emit('complete')
               }
+            }) */
+            this.$store.dispatch('user/createUser',this.ruleForm).then(res => {
+              loading.close()
+              if(res.data.isRegister === 0){
+                // 注册失败
+                this.$toast.showToast(res.data.description)
+              } else {
+                // 注册成功
+                this.$toast.showToast('注册成功。赶快去登录吧',1500)
+                this.resetForm('ruleForm')
+                this.$emit('complete')
+              }
+            }).catch(err => {
+              console.log('注册失败：',err)
+              this.$toast.showToast('注册失败，请稍后重试')
             })
           } else {
             // 验证失败

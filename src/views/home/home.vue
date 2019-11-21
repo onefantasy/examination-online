@@ -17,7 +17,9 @@
                   2. 设定所有子页面的高度
              -->
             <div>
-              <router-view></router-view>
+              <transition name="fade-transform" mode="out-in">
+                <router-view></router-view>
+              </transition>
             </div>
           </el-scrollbar>
         </div>
@@ -30,8 +32,7 @@
   import mainMenu from 'components/content/mainMenu/mainMenu'
   import topBanner from 'components/content/topBanner/topBanner'
 
-  import { mapGetters,mapActions } from 'vuex'
-  import { getUserInfo } from 'network/user'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: "home",
@@ -61,9 +62,6 @@
       ]),
     },
     methods: {
-      ...mapActions([
-        'setUser'
-      ]),
       // 处理主菜单中的选中事件
       menuSelect(index){
         // 跳转子页面
@@ -86,16 +84,11 @@
         background: 'rgba(0, 0, 0, 0.7)'
       })
       // 请求用户的详细信息
-      getUserInfo(this.getUser).then(res => {
+      this.$store.dispatch('user/getInfo',this.getUser).then(res => {
         // 关闭加载提示
         loading.close()
-        if(!res.data.isGet) {
-          this.$toast.showToast(res.data.description || '请求失败')
-        }
-        else {
-          this.setUser(res.data.data)
-        }
-      },err => {
+        res.data.isGet || this.$toast.showToast(res.data.description || '请求失败')
+      }).catch(err => {
         this.$toast.showToast('请求出错，请稍后重试')
       })
     },
@@ -126,5 +119,33 @@
 
   .content-srcollbar{
     height: calc(100vh - 68px);
+  }
+
+  /* 路由切换特效 */
+  /* fade */
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.28s;
+  }
+  
+  .fade-enter,
+  .fade-leave-active {
+    opacity: 0;
+  }
+  
+  /* fade-transform */
+  .fade-transform-leave-active,
+  .fade-transform-enter-active {
+    transition: all .5s;
+  }
+  
+  .fade-transform-enter {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  
+  .fade-transform-leave-to {
+    opacity: 0;
+    transform: translateX(30px);
   }
 </style>

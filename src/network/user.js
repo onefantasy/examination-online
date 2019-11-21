@@ -1,21 +1,38 @@
 import { getJSON,postJSON } from "./index"
+import service from "./index"
 
-// 登陆验证
+// 登录验证2
 export function provingId(data){
-  return postJSON('/user/proving',data)
+  return service({
+    url: '/user/proving',
+    method: 'post',
+    data
+  })
 }
 
 // 注册
 export function register(data){
-  return postJSON('/user/register',data)
+  return service({
+    url: '/user/register',
+    method: 'post',
+    data
+  })
 }
 
 // 获取用户信息
 export function getUserInfo(data){
-  return postJSON('/user/getInfo',data)
+  return service({
+    url: '/user/getInfo',
+    method: 'post',
+    data
+  })
 }
 
 // 设置用户信息
 export function setUserInfo(data){
-  return postJSON('/user/setInfo',data)
+  return service({
+    url: '/user/setInfo',
+    method: 'post',
+    data
+  })
 }
