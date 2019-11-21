@@ -89,6 +89,7 @@
         loading.close()
         res.data.isGet || this.$toast.showToast(res.data.description || '请求失败')
       }).catch(err => {
+        loading.close()
         this.$toast.showToast('请求出错，请稍后重试')
       })
     },
