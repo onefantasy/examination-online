@@ -62,11 +62,11 @@
       refresh(){
         // this.reload()
         this.$router.go(0)
-        this.$notify({
+        /* this.$notify({
           title: '刷新',
           message: '刷新页面成功',
           type: 'success'
-        })
+        }) */
         console.log('页面已经刷新')
       }
     },
