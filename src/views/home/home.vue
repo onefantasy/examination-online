@@ -12,13 +12,14 @@
         <div class="home-content">
           <el-scrollbar class="content-srcollbar">
             <!-- 页面子路由 -->
-            <!-- 此处加个div的原因：
-                  1. 解决替换router-view的子页面没有class（原因未明，估计是el-scrollbar的原因）
-                  2. 设定所有子页面的高度
+            <!-- 
+              此处加个div的原因：
+                1. 解决替换router-view的子页面没有class（原因未明，估计是el-scrollbar的原因）
+                2. 设定所有子页面的高度
              -->
             <div>
               <transition name="fade-transform" mode="out-in">
-                <router-view></router-view>
+                <router-view v-if="!isrefreshHomeContent"></router-view>
               </transition>
             </div>
           </el-scrollbar>
@@ -54,6 +55,8 @@
         ],
         // 是否刷新mainMenu的标志
         isRefreshMainMenu: false,
+        // 是否刷新home-content的标志
+        isrefreshHomeContent: false
       }
     },
     computed:{
@@ -61,17 +64,51 @@
         'getUser'
       ]),
     },
+    watch:{
+      'getUser':{
+        handler(){
+          // 判断用户是否已经将必须的信息填写完成
+          if(this.getUser.name && this.getUser.school && this.getUser.class && this.getUser.number){
+            this.$store.commit('user/SET_INFO',{isComplete:true})
+          } else {
+            this.$store.commit('user/SET_INFO',{isComplete:false})
+          } 
+        },
+        deep: true
+      }
+    },
     methods: {
       // 处理主菜单中的选中事件
       menuSelect(index){
+        let flag = true
+        if([1,2,3,5].indexOf(+index) !== -1){
+          // 判断是否改用户是否已经将用户信息填写完整
+          if(!this.getUser.isComplete){
+            flag = false
+            this.$message.alert('您的必填信息尚未填写完整，请前往个人信息模块将必须的信息填写完整，之后才能使用本功能!','用户信息不完整',{
+              confirmButtonText: '填写信息',
+              callback: action => {
+                // window.location.href = '/home/user'
+                this.$router.push('/home/user')
+              }
+            })
+          }
+        }
         // 跳转子页面
-        this.$router.push(this.routers[index])
+        flag && this.$router.push(this.routers[index])
       },
       // 刷新mainMenu
       refreshMainMenu(){
         this.isRefreshMainMenu = true   // 刷新
         this.$nextTick(function(){
           this.isRefreshMainMenu = false  // 刷新之后就展示
+        })
+      },
+      // 刷新home-content
+      refreshHomeContent(){
+        this.isrefreshHomeContent = true // 刷新
+        this.$nextTick(function(){
+          this.isrefreshHomeContent = false // 刷新之后就开始展示
         })
       }
     },
@@ -87,10 +124,10 @@
       this.$store.dispatch('user/getInfo',this.getUser).then(res => {
         // 关闭加载提示
         loading.close()
-        res.data.isGet || this.$toast.showToast(res.data.description || '请求失败')
+        res.data.errcode === 0 || this.$toast.showToast(res.data.message || '请求失败')
+        this.refreshHomeContent()
       }).catch(err => {
         loading.close()
-        this.$toast.showToast('请求出错，请稍后重试')
       })
     },
     components: {

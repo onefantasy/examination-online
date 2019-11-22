@@ -127,7 +127,7 @@
         // 提交表单数据
         this.$store.dispatch('user/setInfo',this.form).then(res => {
           loading.close()
-          if(res.data.isSet){
+          if(res.data.errcode === 0){
             // 数据保存成功
             this.$notify({
               title: '保存',
@@ -138,7 +138,7 @@
             // 数据保存失败
             this.$notify.error({
               title: '保存',
-              message: res.data.description || '请求出错'
+              message: res.data.message || '请求出错'
             })
           }
         }).catch(err => {
@@ -156,7 +156,7 @@
         this.token = res.token
 
         // 处理选择作为头像的图片
-        if (!res.fileUrl) {
+        if (!res.data.fileUrl) {
           this.$notify.error({
             title: '图片',
             message: '图片上传失败，请稍后重试'
@@ -166,7 +166,7 @@
         // 在图片地址添加没有任何影响的随机数，用于更新图片
         // 因为图片改变之后，地址也没有任何变化，所以浏览器不会进行重新加载图片，导致新图片无法及时展示出来
         // 所以需要加上随机数，让浏览器以为是另一张图片，进行重新加载
-        const temporary = res.fileUrl + `?t=${Math.random()/1000}`
+        const temporary = res.data.fileUrl + `?t=${Math.random()/1000}`
         this.form.headIcon = temporary
 
         // 头像设置成功的提示

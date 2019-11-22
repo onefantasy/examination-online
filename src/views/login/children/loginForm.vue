@@ -98,7 +98,7 @@
             // 登录验证
             this.$store.dispatch('user/login',this.ruleForm).then(res => {
               loading.close()
-              if(res.data.isLogin){
+              if(res.data.errcode === 0){
                 this.$toast.showToast('登录成功')
                 this.keepPassword()
                 this.resetForm('ruleForm')

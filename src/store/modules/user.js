@@ -20,7 +20,7 @@ const actions = {
   login({commit,dispath},payload){
     return new Promise((resolve,reject) => {
       provingId(payload).then(res => {
-        commit('SET_INFO', {status: res.data.status,...payload})
+        commit('SET_INFO', {status: res.data.data.status,...payload})
         resolve(res)
       }).catch(err => {
         reject(err)
@@ -43,7 +43,7 @@ const actions = {
   getInfo({commit},payload){
     return new Promise((resolve,reject) => {
       getUserInfo(payload).then(res => {
-        commit('SET_INFO',res.data.data)
+        commit('SET_INFO',res.data.data.data)
         resolve(res)
       }).catch(err => {
         reject(err)

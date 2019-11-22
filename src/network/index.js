@@ -1,6 +1,5 @@
 import axios from 'axios'
 import CONFIG from './config'
-import webConfig from 'common/config.js'
 
 import { MessageBox, Message } from 'element-ui'
 
@@ -29,7 +28,7 @@ service.interceptors.request.use(
   },
   error => {
     // do something with request error
-    console.log('请求拦截检测到错误：',error) // for debug
+    console.log('request error: ',error) // for debug
     return Promise.reject(error)
   }
 )
@@ -50,29 +49,27 @@ service.interceptors.response.use(
     // 设置token
     response.data.token && window.sessionStorage.setItem('token',response.data.token)
 
-    console.log('请求返回的数据： ',response)
+    console.log('response data : ',response)
 
     const res = response.data
 
     // if the custom code is not 20000, it is judged as an error.
-    if (res.errcode === 0) {
+    if (res.errcode !== 0) {
       Message({
         message: res.message || 'Error',
         type: 'error',
         duration: 5 * 1000
       })
 
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.errcode === 50008 || res.errcode === 50012 || res.errcode === 50014) {
+      // 5001: Illegal token; 50012: Other clients logged in; 5002: Token expired;
+      if (res.errcode === 5001 || res.errcode === 5002 || res.errcode === 50012) {
         // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
+        MessageBox.alert('登录超时，请重新登录', '登出', {
+          confirmButtonText: '重新登录',
+          callback: action => {
+            console.log('点击按钮操作：',action)
+            window.location.href = '/'
+          }
         })
       }
       return Promise.reject(new Error(res.message || 'Error'))
@@ -81,7 +78,7 @@ service.interceptors.response.use(
     }
   },
   error => {
-    console.log('响应拦截到错误：' + error) // for debug
+    console.log('response error : ' + error) // for debug
     Message({
       message: error.message,
       type: 'error',
